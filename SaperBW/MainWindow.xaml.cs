@@ -17,6 +17,7 @@ namespace SaperBW;
 public partial class MainWindow : Window
 {
     private int rozmiar = 10;
+    private int iloscBomb = 10;
     public MainWindow()
     {
         InitializeComponent();
@@ -32,12 +33,54 @@ public partial class MainWindow : Window
             Przycisk przycisk = new Przycisk()
             {
                 Wartosc = 0,
-                FontSize = 50,
-                Background = Brushes.LightGray,
+                FontSize = 30,
+                Background = Brushes.Black,
+                Foreground = Brushes.LightGray
             };
             Grid.SetRow(przycisk, i);
             Grid.SetColumn(przycisk, j);
             plansza.Children.Add(przycisk);
         }
+        
+        RozstawBomby(iloscBomb);
+        PokazPlansze();
+    }
+
+    private Przycisk WyszukajPrzycisk(int x, int y)
+    {
+        var przycisk = (Przycisk)plansza.Children
+            .Cast<Przycisk>()
+            .First(e => Grid.GetRow(e) == x && Grid.GetColumn(e) == y);
+        return przycisk;
+    }
+    private void RozstawBomby(int ilosc)
+    {
+        Random random = new Random();
+        while(ilosc>0)
+        {
+            int x = random.Next(rozmiar);
+            int y = random.Next(rozmiar);
+            Przycisk przycisk = WyszukajPrzycisk(x, y);
+            if (przycisk.Wartosc == 0)
+            {
+                przycisk.Wartosc = 10;
+                ilosc--;
+            }
+        }
+    }
+
+    private void PokazPlansze()
+    {
+        plansza.Children.Cast<Przycisk>().ToList().ForEach(przycisk =>
+        {
+            if (przycisk.Wartosc == 10)
+            {
+                przycisk.Content = "🎅🏿";
+            }
+            else
+            {
+                przycisk.Content = przycisk.Wartosc;
+            }
+        });
     }
 }
